@@ -1,18 +1,16 @@
-Example
-=======
+barcode_scanner
+===
 
 Blocks in this Collection
 -------------------------
-[Example](docs/example_block.md)
-
-Installation
-------------
-Any additional information or steps required for installation can go here.
+[BarcodeScanner](docs/barcode_scanner_block.md)
 
 Notes
 -----
-Notes for developers can go here.
+Availability: Linux and Mac, the USB input device must be mapped to `/dev/hidraw0`.
+
+TODO: fix that
 
 Dependencies
 ------------
-None, or list all packages that need to be installed. This should match `requirements.txt`, plus any packages that cannot be installed using `pip`.
+None

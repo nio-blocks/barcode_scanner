@@ -1,15 +1,19 @@
-Example
-=======
-What does this block do?
+BarcodeScanner
+===
+For every successful scan of a barcode, notify a signal with the barcode value in plain text.
 
 Properties
-----------
-None, or describe any configurable properties of the block.
+---
+None
 
 Example
--------
-Provide a helpful example of input and output signals, and the effects of the various properties and commands available.
+---
+```
+{
+  'barcode': 'ABC123!@#'
+}
+```
 
 Commands
---------
-None, or describe any commands that are available.
+---
+None
