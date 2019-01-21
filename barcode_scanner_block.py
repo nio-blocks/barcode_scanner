@@ -1,13 +1,14 @@
 from .hid_map import *
 from nio import GeneratorBlock, Signal
-from nio.properties import VersionProperty
+from nio.properties import StringProperty, VersionProperty
 from nio.util.threading import spawn
 
 
 class BarcodeScanner(GeneratorBlock):
 
     version = VersionProperty('0.1.0')
-    
+    device = StringProperty(title='Device', default='/dev/hidraw0', advanced=True)
+
     def __init__(self):
         super().__init__()
         self.file_descriptor = None
@@ -17,7 +18,7 @@ class BarcodeScanner(GeneratorBlock):
     def configure(self, context):
         super().configure(context)
         self._kill = False
-        self.file_descriptor = open('/dev/hidraw0', 'rb')
+        self.file_descriptor = open(self.device(), 'rb')
         self._thread = spawn(self._delimited_reader)
 
     def stop(self):
