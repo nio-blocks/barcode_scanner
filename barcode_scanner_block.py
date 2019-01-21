@@ -7,7 +7,9 @@ from nio.util.threading import spawn
 class BarcodeScanner(GeneratorBlock):
 
     version = VersionProperty('0.1.0')
-    device = StringProperty(title='Device', default='/dev/hidraw0', advanced=True)
+    device = StringProperty(title='Device',
+                            default='/dev/hidraw0',
+                            advanced=True)
 
     def __init__(self):
         super().__init__()
@@ -22,9 +24,8 @@ class BarcodeScanner(GeneratorBlock):
         self._thread = spawn(self._delimited_reader)
 
     def stop(self):
-        self._kill = True
+        self._disconnect()
         self._thread.join()
-        self.file_descriptor.close()
         super().stop()
 
     def _delimited_reader(self):
@@ -55,3 +56,7 @@ class BarcodeScanner(GeneratorBlock):
                 output += hid_map[map][ord(b)]
                 shift = False
         return output
+
+    def _disconnect(self):
+        self._kill = True
+        self.file_descriptor.close()
