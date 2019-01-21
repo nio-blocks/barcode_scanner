@@ -36,7 +36,7 @@ class TestBarcodeScanner(NIOBlockTestCase):
         expected_code = 'LS01'
         e = Event()
         blk = ReadEvent(e)
-        _mock = mock_open(read_data='foo')
+        _mock = mock_open()
         with patch ('builtins.open', _mock) as mock_file:
             mock_fd = Mock()
             mock_file.return_value = mock_fd
