@@ -1,14 +1,14 @@
 from nio.block.terminals import DEFAULT_TERMINAL
 from nio.signal.base import Signal
 from nio.testing.block_test_case import NIOBlockTestCase
-from ..example_block import Example
+from ..barcode_scanner_block import BarcodeScanner
 
 
-class TestExample(NIOBlockTestCase):
+class TestBarcodeScanner(NIOBlockTestCase):
 
     def test_process_signals(self):
         """Signals pass through block unmodified."""
-        blk = Example()
+        blk = BarcodeScanner()
         self.configure_block(blk, {})
         blk.start()
         blk.process_signals([Signal({"hello": "nio"})])
