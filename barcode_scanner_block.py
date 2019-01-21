@@ -23,6 +23,7 @@ class BarcodeScanner(GeneratorBlock):
     def stop(self):
         self._kill = True
         self._thread.join()
+        self.file_descriptor.close()
         super().stop()
 
     def _delimited_reader(self):
