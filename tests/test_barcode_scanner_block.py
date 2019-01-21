@@ -7,6 +7,18 @@ from nio.util.discovery import not_discoverable
 from ..barcode_scanner_block import BarcodeScanner
 
 
+class ReadSizeBytes():
+    def __init__(self, data=""):
+        self._data = data
+
+    def __call__(self, l=0):
+        if not self._data:
+            return ""
+        if not l:
+            l = len(self._data)
+        r, self._data = self._data[:l], self._data[l:]
+        return r
+
 @not_discoverable
 class ReadEvent(BarcodeScanner):
 
@@ -36,11 +48,8 @@ class TestBarcodeScanner(NIOBlockTestCase):
         expected_code = 'LS01'
         e = Event()
         blk = ReadEvent(e)
-        _mock = mock_open()
-        with patch ('builtins.open', _mock) as mock_file:
-            mock_fd = Mock()
-            mock_file.return_value = mock_fd
-            mock_fd.read.side_effect = self.barcodes[expected_code]
+        with patch('builtins.open', new_callable=mock_open) as mock_file:
+            mock_file.return_value.read.side_effect = ReadSizeBytes(self.barcodes['LS01'])
             self.configure_block(blk, {})
             blk.start()
             e.wait(1)  # wait up to 1 sec for signals from block

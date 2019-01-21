@@ -27,13 +27,14 @@ class BarcodeScanner(GeneratorBlock):
         super().stop()
 
     def _delimited_reader(self):
-        delimiter = 40  # carriage return
+        delimiter = b'\x28'  # carriage return
         buffer = []
         while not self._kill:
             try:
                 new_byte = self.file_descriptor.read(1)
             except:
-                self.logger.exception('Read from HID device failed')
+                self.logger.exception(
+                    'Read operation from HID Device failed')
             if new_byte == delimiter:
                 signal_dict = {'barcode': self._decode_buffer(buffer)}
                 self.notify_signals([Signal(signal_dict)])
@@ -45,11 +46,11 @@ class BarcodeScanner(GeneratorBlock):
         shift = False
         output = ''
         for b in buffer:
-            if b > 0:
-                if b == 2:  # shift the next character
+            if b != b'\x00':
+                if b == b'\x02':  # shift the next character
                     shift = True
                     continue
                 map = 'reg' if not shift else 'shift'
-                output += hid_map[map][b]
+                output += hid_map[map][ord(b)]
                 shift = False
         return output
