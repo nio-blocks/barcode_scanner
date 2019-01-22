@@ -49,7 +49,8 @@ class BarcodeScanner(GeneratorBlock):
 
     def _delimited_reader(self):
         thread_id = current_thread().name
-        self.logger.debug('Reader thread {} spawned'.format(thread_id))
+        self.logger.debug(
+            'Reader thread {} spawned'.format(thread_id))
         delimiter = b'\x28'  # carriage return
         buffer = []
         while not self._kill:
@@ -67,7 +68,8 @@ class BarcodeScanner(GeneratorBlock):
                 buffer = []
                 continue
             buffer.append(new_byte)
-        self.logger.debug('Reader thread {} terminated'.format(thread_id))
+        self.logger.debug(
+            'Reader thread {} terminated'.format(thread_id))
 
     def _decode_buffer(self, buffer):
         self.logger.debug('decoding {} bytes'.format(len(buffer)))
