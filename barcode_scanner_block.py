@@ -1,7 +1,8 @@
 from .hid_map import *
 from time import sleep
 from nio import GeneratorBlock, Signal
-from nio.properties import StringProperty, VersionProperty
+from nio.properties import IntProperty, StringProperty, \
+                           VersionProperty
 from nio.util.threading import spawn
 
 
@@ -11,6 +12,9 @@ class BarcodeScanner(GeneratorBlock):
     device = StringProperty(title='Device',
                             default='/dev/hidraw0',
                             advanced=True)
+    reconnect_interval = IntProperty(title='Reconnect Interval',
+                                     default=10,
+                                     advanced=True)
 
     def __init__(self):
         super().__init__()
@@ -19,11 +23,12 @@ class BarcodeScanner(GeneratorBlock):
         self._thread = None
 
     def start(self):
-        self._connect()
+        spawn(self._connect)
         super().start()
 
     def stop(self):
-        self._disconnect()
+        if self.file_descriptor:
+            self._disconnect()
         super().stop()
 
     def _connect(self):
@@ -33,8 +38,11 @@ class BarcodeScanner(GeneratorBlock):
             try:
                 self.file_descriptor = open(self.device(), 'rb')
             except:
-                self.logger.error('Unable to open HID Device, trying again in 10 seconds')
-                sleep(10)
+                self.logger.error(
+                    'Unable to open HID Device, '
+                    'trying again in {} seconds'.format(
+                        self.reconnect_interval()))
+                sleep(self.reconnect_interval())
         self._kill = False
         self._thread = spawn(self._delimited_reader)
 

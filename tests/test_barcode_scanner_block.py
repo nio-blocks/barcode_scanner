@@ -43,18 +43,49 @@ class TestBarcodeScanner(NIOBlockTestCase):
         ),
     }
 
-    def test_read(self):
+    @patch('builtins.open')
+    def test_read(self, test_open):
         """When a barcode is scanned a signal is notified"""
         expected_code = 'LS01'
         e = Event()
         blk = ReadEvent(e)
-        with patch('builtins.open', new_callable=mock_open) as mock_file:
-            mock_file.return_value.read.side_effect = ReadSizeBytes(self.barcodes['LS01'])
-            self.configure_block(blk, {})
-            blk.start()
-            e.wait(1)  # wait up to 1 sec for signals from block
-            blk.stop()
+        mock_file = Mock()
+        test_open.return_value = mock_file
+        mock_file.read.side_effect = ReadSizeBytes(
+            self.barcodes[expected_code])
+        self.configure_block(blk, {})
+        blk.start()
+        e.wait(1)  # wait up to 1 sec for signals from block
+        blk.stop()
         self.assertDictEqual(
             self.last_notified[DEFAULT_TERMINAL][0].to_dict(),
             {'barcode': expected_code}
         )
+
+    @patch('builtins.open')
+    def test_device_property(self, test_open):
+        """Block is configurable"""
+        blk = BarcodeScanner()
+        self.configure_block(blk, {
+            'device': 'foo',
+        })
+        blk.start()
+        blk.stop()
+        test_open.assert_called_once_with('foo', 'rb')
+
+    @patch(BarcodeScanner.__module__ + '.sleep')
+    @patch('builtins.open')
+    def test_reconnect(self, test_open, mock_sleep):
+        """Reconnections wait for a configured interval"""
+        test_open.side_effect = [OSError, Mock()]
+        blk = BarcodeScanner()
+        self.configure_block(blk, {
+            'reconnect_interval': 5,
+        })
+        blk.start()
+        self.assertEqual(test_open.call_count, 1)
+        mock_sleep.assert_called_once_with(5)
+        self.assertIsNone(blk.file_descriptor)
+        self.assertEqual(test_open.call_count, 2)
+        self.assertIsNotNone(blk.file_descriptor)
+        blk.stop()
