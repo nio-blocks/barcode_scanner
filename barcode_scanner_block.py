@@ -1,4 +1,5 @@
 from .hid_map import *
+from threading import current_thread
 from time import sleep
 from nio import GeneratorBlock, Signal
 from nio.properties import IntProperty, StringProperty, \
@@ -47,7 +48,8 @@ class BarcodeScanner(GeneratorBlock):
         self._thread = spawn(self._delimited_reader)
 
     def _delimited_reader(self):
-        self.logger.debug('Reader thread spawned')
+        thread_id = current_thread().name
+        self.logger.debug('Reader thread {} spawned'.format(thread_id))
         delimiter = b'\x28'  # carriage return
         buffer = []
         while not self._kill:
@@ -65,7 +67,7 @@ class BarcodeScanner(GeneratorBlock):
                 buffer = []
                 continue
             buffer.append(new_byte)
-        self.logger.debug('Reader thread terminated')
+        self.logger.debug('Reader thread {} terminated'.format(thread_id))
 
     def _decode_buffer(self, buffer):
         self.logger.debug('decoding {} bytes'.format(len(buffer)))
