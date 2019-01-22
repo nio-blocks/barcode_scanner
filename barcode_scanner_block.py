@@ -18,9 +18,9 @@ class BarcodeScanner(GeneratorBlock):
         self._kill = None
         self._thread = None
 
-    def configure(self, context):
-        super().configure(context)
+    def start(self):
         self._connect()
+        super().start()
 
     def stop(self):
         self._disconnect()
