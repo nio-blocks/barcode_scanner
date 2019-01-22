@@ -72,22 +72,3 @@ class TestBarcodeScanner(NIOBlockTestCase):
         blk.start()
         blk.stop()
         mock_open.assert_called_once_with('foo', 'rb')
-
-    @patch(BarcodeScanner.__module__ + '.sleep')
-    @patch('builtins.open')
-    def test_reconnect(self, mock_open, mock_sleep):
-        """Reconnections wait for a configured interval"""
-        mock_open.side_effect = [OSError, Mock()]
-        blk = BarcodeScanner()
-        print(blk)
-        print(BarcodeScanner.__module__)
-        self.configure_block(blk, {
-            'reconnect_interval': 5,
-        })
-        blk.start()
-        self.assertEqual(mock_open.call_count, 1)
-        mock_sleep.assert_called_once_with(5)
-        self.assertIsNone(blk.file_descriptor)
-        self.assertEqual(mock_open.call_count, 2)
-        self.assertIsNotNone(blk.file_descriptor)
-        blk.stop()
