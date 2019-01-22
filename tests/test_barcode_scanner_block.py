@@ -1,5 +1,5 @@
 from threading import Event
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import Mock, patch
 from nio import Signal
 from nio.block.terminals import DEFAULT_TERMINAL
 from nio.testing.block_test_case import NIOBlockTestCase
@@ -44,13 +44,13 @@ class TestBarcodeScanner(NIOBlockTestCase):
     }
 
     @patch('builtins.open')
-    def test_read(self, test_open):
+    def test_read(self, mock_open):
         """When a barcode is scanned a signal is notified"""
         expected_code = 'LS01'
         e = Event()
         blk = ReadEvent(e)
         mock_file = Mock()
-        test_open.return_value = mock_file
+        mock_open.return_value = mock_file
         mock_file.read.side_effect = ReadSizeBytes(
             self.barcodes[expected_code])
         self.configure_block(blk, {})
@@ -63,7 +63,7 @@ class TestBarcodeScanner(NIOBlockTestCase):
         )
 
     @patch('builtins.open')
-    def test_device_property(self, test_open):
+    def test_device_property(self, mock_open):
         """Block is configurable"""
         blk = BarcodeScanner()
         self.configure_block(blk, {
@@ -71,21 +71,23 @@ class TestBarcodeScanner(NIOBlockTestCase):
         })
         blk.start()
         blk.stop()
-        test_open.assert_called_once_with('foo', 'rb')
+        mock_open.assert_called_once_with('foo', 'rb')
 
     @patch(BarcodeScanner.__module__ + '.sleep')
     @patch('builtins.open')
-    def test_reconnect(self, test_open, mock_sleep):
+    def test_reconnect(self, mock_open, mock_sleep):
         """Reconnections wait for a configured interval"""
-        test_open.side_effect = [OSError, Mock()]
+        mock_open.side_effect = [OSError, Mock()]
         blk = BarcodeScanner()
+        print(blk)
+        print(BarcodeScanner.__module__)
         self.configure_block(blk, {
             'reconnect_interval': 5,
         })
         blk.start()
-        self.assertEqual(test_open.call_count, 1)
+        self.assertEqual(mock_open.call_count, 1)
         mock_sleep.assert_called_once_with(5)
         self.assertIsNone(blk.file_descriptor)
-        self.assertEqual(test_open.call_count, 2)
+        self.assertEqual(mock_open.call_count, 2)
         self.assertIsNotNone(blk.file_descriptor)
         blk.stop()
