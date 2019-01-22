@@ -19,7 +19,7 @@ class BarcodeScanner(GeneratorBlock):
         self._thread = None
 
     def start(self):
-        self._connect()
+        spawn(self._connect)
         super().start()
 
     def stop(self):
