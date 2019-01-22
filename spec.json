@@ -1,11 +1,11 @@
 {
-  "nio/Example": {
-    "description": "A short summary of the block.",
+  "nio/BarcodeScanner": {
+    "description": "Emit signals as barcodes are scanned from a generic USB/HID reader.",
     "categories": [
-      ""
+      "Hardware"
     ],
-    "tags": "",
-    "from_readme": "docs/example_block.md",
-    "from_python": "example_block.Example"
+    "tags": "bar code scan",
+    "from_readme": "docs/barcode_scanner_block.md",
+    "from_python": "barcode_scanner_block.BarcodeScanner"
   }
 }
