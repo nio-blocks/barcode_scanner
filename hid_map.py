@@ -1,5 +1,8 @@
+"""Simple HID mapping of ordinal values to characters. Dictionary keys represent the shift key (indicated by ord value 2 in preceding byte)
+"""
+
 hid_map = {
-    'reg': {
+    False: {
         4: 'a',
         5: 'b',
         6: 'c',
@@ -49,7 +52,7 @@ hid_map = {
         55: '.',
         56: '/',
     },
-    'shift': {
+    True: {
         4: 'A',
         5: 'B',
         6: 'C',

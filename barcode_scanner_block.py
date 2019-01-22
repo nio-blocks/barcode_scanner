@@ -1,5 +1,5 @@
-from time import sleep
 from .hid_map import *
+from time import sleep
 from nio import GeneratorBlock, Signal
 from nio.properties import StringProperty, VersionProperty
 from nio.util.threading import spawn
@@ -68,8 +68,7 @@ class BarcodeScanner(GeneratorBlock):
                 if b == b'\x02':  # shift the next character
                     shift = True
                     continue
-                map = 'reg' if not shift else 'shift'
-                output += hid_map[map][ord(b)]
+                output += hid_map[shift][ord(b)]
                 shift = False
         return output
 
