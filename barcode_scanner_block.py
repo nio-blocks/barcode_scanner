@@ -41,7 +41,7 @@ class BarcodeScanner(GeneratorBlock):
                 self.logger.error(
                     'Unable to open HID Device, '
                     'trying again in {} seconds'.format(
-                        self.reconnect_interval()))
+                        self.reconnect_interval))
                 sleep(self.reconnect_interval)
         self._kill = False
         self._thread = spawn(self._delimited_reader)
