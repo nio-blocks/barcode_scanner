@@ -66,7 +66,7 @@ class BarcodeScanner(GeneratorBlock):
                 continue
             buffer.append(new_byte)
         self.logger.debug(
-            'Reader thread {} terminated'.format(thread_id))
+            'Reader thread {} completed'.format(thread_id))
 
     def _decode_buffer(self, buffer):
         self.logger.debug('decoding {} bytes'.format(len(buffer)))
