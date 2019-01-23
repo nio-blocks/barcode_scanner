@@ -8,10 +8,12 @@ from nio.util.threading import spawn
 
 class BarcodeScanner(GeneratorBlock):
 
-    version = VersionProperty('0.1.0')
     device = StringProperty(title='Device',
                             default='/dev/hidraw0',
                             advanced=True)
+    version = VersionProperty('0.1.0')
+
+    delimiter = b'\x28'  # carriage return
     reconnect_interval = 10
 
     def __init__(self):
@@ -48,7 +50,6 @@ class BarcodeScanner(GeneratorBlock):
         thread_id = current_thread().name
         self.logger.debug(
             'Reader thread {} spawned'.format(thread_id))
-        delimiter = b'\x28'  # carriage return
         buffer = []
         while not self._kill:
             try:
@@ -59,7 +60,7 @@ class BarcodeScanner(GeneratorBlock):
                 self._disconnect()
                 self._connect()
                 break
-            if new_byte == delimiter:
+            if new_byte == self.delimiter:
                 signal_dict = {'barcode': self._decode_buffer(buffer)}
                 self.notify_signals([Signal(signal_dict)])
                 buffer = []
