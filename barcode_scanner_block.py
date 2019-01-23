@@ -23,8 +23,8 @@ class BarcodeScanner(GeneratorBlock):
         self._thread = None
 
     def start(self):
-        spawn(self._connect)
         super().start()
+        spawn(self._connect)
 
     def stop(self):
         if self.file_descriptor:
