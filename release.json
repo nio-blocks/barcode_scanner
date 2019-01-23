@@ -1,7 +1,7 @@
 {
   "nio/Example": {
     "language": "Python",
-    "from_python": "barcode_scanner_block.barcodeScanner",
+    "from_python": "barcode_scanner_block.BarcodeScanner",
     "url": "git://github.com/nio-blocks/barcode_scanner.git"
   }
 }
