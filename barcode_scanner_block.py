@@ -73,12 +73,13 @@ class BarcodeScanner(GeneratorBlock):
         shift = False
         output = ''
         for b in buffer:
-            if b != b'\x00':
-                if b == b'\x02':  # shift the next character
-                    shift = True
-                    continue
-                output += hid_map[shift][ord(b)]
-                shift = False
+            if b == b'\x00':
+                continue
+            if b == b'\x02':  # shift the next character
+                shift = True
+                continue
+            output += hid_map[shift][ord(b)]
+            shift = False
         return output
 
     def _disconnect(self):
