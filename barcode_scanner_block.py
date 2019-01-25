@@ -11,7 +11,7 @@ class BarcodeScanner(GeneratorBlock):
     device = StringProperty(title='Device',
                             default='/dev/hidraw0',
                             advanced=True)
-    version = VersionProperty('0.1.1')
+    version = VersionProperty('0.1.0')
 
     delimiter = b'\x28'  # carriage return
     reconnect_interval = 10
@@ -33,7 +33,7 @@ class BarcodeScanner(GeneratorBlock):
 
     def _connect(self):
         self.logger.debug('Opening HID Device {}'.format(self.device()))
-        while not self.file_descriptor and not self._kill:
+        while not self.file_descriptor:
             try:
                 self.file_descriptor = open(self.device(), 'rb')
             except:
