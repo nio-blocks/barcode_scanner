@@ -40,7 +40,6 @@ class BarcodeScanner(GeneratorBlock):
             except:
                 if not self.status.is_set(RunnerStatus.warning):
                     self.set_status('warning')
-                self.set_status('warning')
                 msg = 'Unable to open HID Device, trying again in {} seconds'
                 self.logger.error(msg.format(self.reconnect_interval))
                 sleep(self.reconnect_interval)
@@ -58,7 +57,6 @@ class BarcodeScanner(GeneratorBlock):
             except:
                 if not self.status.is_set(RunnerStatus.warning):
                     self.set_status('warning')
-                self.set_status('warning')
                 self.logger.exception('Read operation from HID Device failed')
                 self._disconnect()
                 self._connect()
