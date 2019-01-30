@@ -38,8 +38,7 @@ class BarcodeScanner(GeneratorBlock):
             try:
                 self.file_descriptor = open(self.device(), 'rb')
             except:
-                if not self.status.is_set(RunnerStatus.warning):
-                    self.set_status('warning')
+                self.set_status('warning', message='Open device failed')
                 msg = 'Unable to open HID Device, trying again in {} seconds'
                 self.logger.error(msg.format(self.reconnect_interval))
                 sleep(self.reconnect_interval)
@@ -55,8 +54,7 @@ class BarcodeScanner(GeneratorBlock):
             try:
                 new_byte = self.file_descriptor.read(1)
             except:
-                if not self.status.is_set(RunnerStatus.warning):
-                    self.set_status('warning')
+                self.set_status('warning', message='Read from device failed')
                 self.logger.exception('Read operation from HID Device failed')
                 self._disconnect()
                 self._connect()

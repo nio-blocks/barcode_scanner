@@ -49,7 +49,7 @@ class ScannerEvents(BarcodeScanner):
         if self.notify_event:
             self.notify_event.set()
 
-    def set_status(self, status):
+    def set_status(self, status, message=''):
         super().set_status(status)
         if status == 'ok' and self.ok_event:
             self.ok_event.set()
