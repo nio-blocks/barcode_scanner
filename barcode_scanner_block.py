@@ -12,7 +12,7 @@ class BarcodeScanner(GeneratorBlock):
     device = StringProperty(title='Device',
                             default='/dev/hidraw0',
                             advanced=True)
-    version = VersionProperty('0.1.2')
+    version = VersionProperty('0.1.3')
 
     delimiter = b'\x28'  # carriage return
     reconnect_interval = 10
