@@ -4,7 +4,6 @@ from nio import Signal
 from nio.block.terminals import DEFAULT_TERMINAL
 from nio.testing.block_test_case import NIOBlockTestCase
 from nio.util.discovery import not_discoverable
-from nio.util.runner import RunnerStatus
 from ..barcode_scanner_block import BarcodeScanner
 
 
