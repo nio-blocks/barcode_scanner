@@ -84,7 +84,7 @@ class TestBarcodeScanner(NIOBlockTestCase):
             self.barcodes[expected_code])
         self.configure_block(blk, {})
         blk.start()
-        notify_event.wait(1)  # wait for spawned thread to notify signals
+        self.assertTrue(notify_event.wait(1))
         blk.stop()
         self.assertDictEqual(
             self.last_notified[DEFAULT_TERMINAL][0].to_dict(),
@@ -157,4 +157,29 @@ class TestBarcodeScanner(NIOBlockTestCase):
         # read operations resume and we get another signal
         self.assertTrue(notify_event.wait(1))
         self.assert_num_signals_notified(2)
+        blk.stop()
+
+    @patch('builtins.open')
+    def test_unknown_characters(self, mock_open):
+        """Scanning unknown characters is handled."""
+        expected_code = 'LS01'
+        scanned_code = b'\xf8\x28'  # unmapped byted followed by delimiter
+        scanned_code += self.barcodes[expected_code]  # successful scan
+        notify_event = Event()
+        blk = ScannerEvents(notify_event=notify_event)
+        mock_file = Mock()
+        mock_open.return_value = mock_file
+        mock_file.read.side_effect = ReadSizeBytes(scanned_code)
+        self.configure_block(blk, {})
+        blk.start()
+        # wait for successful read and notify
+        self.assertTrue(notify_event.wait(1))
+        self.assertTrue(blk._thread.is_alive())
+        self.assert_num_signals_notified(2)
+        self.assertDictEqual(
+            self.last_notified[DEFAULT_TERMINAL][0].to_dict(),
+            {'barcode': None})
+        self.assertDictEqual(
+            self.last_notified[DEFAULT_TERMINAL][1].to_dict(),
+            {'barcode': expected_code})
         blk.stop()

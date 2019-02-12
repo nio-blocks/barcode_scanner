@@ -62,7 +62,12 @@ class BarcodeScanner(GeneratorBlock):
                 self._connect()
                 break
             if new_byte == self.delimiter:
-                signal_dict = {'barcode': self._decode_buffer(buffer)}
+                try:
+                    barcode = self._decode_buffer(buffer)
+                except:
+                    self.logger.exception('Failed to decode barcode!')
+                    barcode = None
+                signal_dict = {'barcode': barcode}
                 self.notify_signals([Signal(signal_dict)])
                 buffer = []
                 continue
