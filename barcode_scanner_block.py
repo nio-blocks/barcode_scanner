@@ -1,4 +1,5 @@
-from .hid_map import *
+from .hid_map import hid_map
+from binascii import hexlify
 from threading import current_thread
 from time import sleep
 from nio import GeneratorBlock, Signal
@@ -76,6 +77,7 @@ class BarcodeScanner(GeneratorBlock):
 
     def _decode_buffer(self, buffer):
         self.logger.debug('decoding {} bytes'.format(len(buffer)))
+        self.logger.debug('buffer: {}'.format([hexlify(b) for b in buffer]))
         shift = False
         output = ''
         for b in buffer:
