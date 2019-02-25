@@ -1,4 +1,5 @@
-from .hid_map import *
+from .hid_map import hid_map
+from binascii import hexlify
 from threading import current_thread
 from time import sleep
 from nio import GeneratorBlock, Signal
@@ -37,7 +38,7 @@ class BarcodeScanner(GeneratorBlock):
         while not self.file_descriptor:
             try:
                 self.file_descriptor = open(self.device(), 'rb')
-            except:
+            except Exception:
                 if not self.status.is_set(RunnerStatus.warning):
                     self.set_status('warning')
                 msg = 'Unable to open HID Device, trying again in {} seconds'
@@ -54,7 +55,7 @@ class BarcodeScanner(GeneratorBlock):
         while not self._kill:
             try:
                 new_byte = self.file_descriptor.read(1)
-            except:
+            except Exception:
                 if not self.status.is_set(RunnerStatus.warning):
                     self.set_status('warning')
                 self.logger.exception('Read operation from HID Device failed')
@@ -64,7 +65,7 @@ class BarcodeScanner(GeneratorBlock):
             if new_byte == self.delimiter:
                 try:
                     barcode = self._decode_buffer(buffer)
-                except:
+                except Exception:
                     self.logger.exception('Failed to decode barcode!')
                     barcode = None
                 signal_dict = {'barcode': barcode}
@@ -76,6 +77,7 @@ class BarcodeScanner(GeneratorBlock):
 
     def _decode_buffer(self, buffer):
         self.logger.debug('decoding {} bytes'.format(len(buffer)))
+        self.logger.debug('buffer: {}'.format([hexlify(b) for b in buffer]))
         shift = False
         output = ''
         for b in buffer:
