@@ -80,9 +80,17 @@ class BarcodeScanner(GeneratorBlock):
         self.logger.debug('buffer: {}'.format([hexlify(b) for b in buffer]))
         shift = False
         output = ''
+        zeroes = 0
         for b in buffer:
             if b == b'\x00':
+                zeroes += 1
+                # If we've read more than 2 straight 0s then reset our shift
+                # Sometimes rogue shift keys seem to come through when they
+                # aren't actually shifting anything
+                if zeroes > 2:
+                    shift = False
                 continue
+            zeroes = 0
             if b == b'\x02':  # shift the next character
                 shift = True
                 continue
