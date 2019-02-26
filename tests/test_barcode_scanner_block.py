@@ -70,6 +70,17 @@ class TestBarcodeScanner(NIOBlockTestCase):
             b'\x00\x00\x1e\x00\x00\x00\x00\x00'
             b'\x00\x00\x28'
         ),
+        'empty_shift': (
+            b'\x02\x00\x00\x00\x00\x00\x00\x00'
+            b'\x02\x00\x0f\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x02\x00\x00\x00\x00\x00\x00\x00'
+            b'\x02\x00\x16\x00\x00\x00\x00\x00'
+            b'\x02\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x27\x00\x00\x00\x00\x00'
+            b'\x00\x00\x1e\x00\x00\x00\x00\x00'
+            b'\x00\x00\x28'
+        ),
     }
 
     @patch('builtins.open')
@@ -183,3 +194,21 @@ class TestBarcodeScanner(NIOBlockTestCase):
             self.last_notified[DEFAULT_TERMINAL][1].to_dict(),
             {'barcode': expected_code})
         blk.stop()
+
+    @patch('builtins.open')
+    def test_empty_shift(self, mock_open):
+        """Sometimes rogue shifts come through, ignore them """
+        expected_code = 'LS01'
+        notify_event = Event()
+        blk = ScannerEvents(notify_event=notify_event)
+        mock_file = Mock()
+        mock_open.return_value = mock_file
+        mock_file.read.side_effect = ReadSizeBytes(
+            self.barcodes['empty_shift'])
+        self.configure_block(blk, {})
+        blk.start()
+        self.assertTrue(notify_event.wait(1))
+        blk.stop()
+        self.assertDictEqual(
+            self.last_notified[DEFAULT_TERMINAL][0].to_dict(),
+            {'barcode': expected_code})
