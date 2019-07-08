@@ -16,7 +16,7 @@ class BarcodeScanner(GeneratorBlock):
     version = VersionProperty('0.1.3')
 
     delimiter = b'\x28'  # carriage return
-    reconnect_interval = 10
+    reconnect_interval = 1
 
     def __init__(self):
         super().__init__()
